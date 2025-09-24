@@ -1,0 +1,18 @@
+{
+  "files": {
+    "main.css": "/static/css/main.491f59c2.css",
+    "main.js": "/static/js/main.d612f79f.js",
+    "static/media/Navbar.png": "/static/media/Navbar.f96a9f58c491b9acda99.png",
+    "static/media/logo-elopar-light.png": "/static/media/logo-elopar-light.6f47acd15bb45b66d946.png",
+    "static/media/assinatura_logos_2024-1024x219.png": "/static/media/assinatura_logos_2024-1024x219.75a5a100808ee073488a.png",
+    "static/media/ConfiguratorLogo.png": "/static/media/ConfiguratorLogo.f18c28ad928b87ca0386.png",
+    "static/media/elopar-150x150.webp": "/static/media/elopar-150x150.380979d5ea109b98e98a.webp",
+    "index.html": "/index.html",
+    "main.491f59c2.css.map": "/static/css/main.491f59c2.css.map",
+    "main.d612f79f.js.map": "/static/js/main.d612f79f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.491f59c2.css",
+    "static/js/main.d612f79f.js"
+  ]
+}
