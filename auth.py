@@ -7,6 +7,7 @@ import os
 from flask_talisman import Talisman
 from datetime import datetime, timedelta
 from functools import wraps
+import traceback
 
 load_dotenv()
 
@@ -26,7 +27,9 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
+# ---------------------------
 # Configurações Azure AD
+# ---------------------------
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 AUTHORITY = os.getenv('AUTHORITY')  # Ex: "https://login.microsoftonline.com/<tenant_id>"
@@ -71,15 +74,20 @@ def login():
         return redirect(url, code=301)
 
     session["flow"] = _build_auth_code_flow(scopes=SCOPE)
+    print(">>> Redirecting to Azure:", session["flow"]["auth_uri"])
     return redirect(session["flow"]["auth_uri"])
 
 
 @app.route(REDIRECT_PATH)
 def authorized():
     try:
+        print(">>> Cheguei no /getAToken com args:", request.args)
+
         result = _build_msal_app().acquire_token_by_auth_code_flow(
             session.get("flow", {}), request.args
         )
+        print(">>> MSAL result:", result)
+
         if "error" in result:
             return "Login falhou: " + result.get("error_description")
 
@@ -100,10 +108,14 @@ def authorized():
 
         # Redireciona o usuário pro React com o token na URL
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
-        return redirect(f"{frontend_url}/#/callback?token={internal_token}")
+        redirect_url = f"{frontend_url}/#/callback?token={internal_token}"
+        print(">>> Redirecionando para o front:", redirect_url)
+        return redirect(redirect_url)
 
-    except ValueError:
-        return "Erro na autorização", 400
+    except Exception as e:
+        print(">>> ERRO NO AUTHORIZED:", e)
+        traceback.print_exc()
+        return f"Erro na autorização: {str(e)}", 400
 
 
 @app.route('/logout')
@@ -126,7 +138,8 @@ def _build_msal_app(cache=None):
     )
 
 def _build_auth_code_flow(scopes=None):
+    # força a URL de retorno com a porta 8443
     return _build_msal_app().initiate_auth_code_flow(
         scopes or [],
-        redirect_uri=url_for('authorized', _external=True, _scheme='https')
+        redirect_uri="https://contratos-si.elopar.com.br:8443/getAToken"
     )
